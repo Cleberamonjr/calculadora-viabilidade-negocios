@@ -110,6 +110,19 @@ export default function App() {
     b2b: score({ margin: A.margin, ltvCac: 1, payback: A.payback, capital: A.capital, working: A.working, recurrence: 70, breakEven: A.be, risk: A.stock > 3000 ? 40 : 20 })
   };
 
+  const resetData = () => {
+    const cleared = Object.fromEntries(
+      Object.entries(initial).map(([section, fields]) => [
+        section,
+        Object.fromEntries(
+          Object.entries(fields).map(([key, value]) => [key, typeof value === "number" ? 0 : ""])
+        )
+      ])
+    );
+    setData(cleared);
+    setScenario("BASE");
+  };
+
   const update = (section, field, value) => setData(d => ({ ...d, [section]: { ...d[section], [field]: value } }));
 
   const applyScenario = key => {
@@ -180,7 +193,7 @@ export default function App() {
   }
 
   return <>
-    <header><div><i>DECISÃO EMPRESARIAL</i><h1>Calculadora de <b>Viabilidade</b></h1><p>B2C · SaaS · B2B</p></div><button onClick={() => setData(initial)}>Resetar</button></header>
+    <header><div><i>DECISÃO EMPRESARIAL</i><h1>Calculadora de <b>Viabilidade</b></h1><p>B2C · SaaS · B2B</p></div><button onClick={resetData}>Zerar dados</button></header>
     <nav>{[["dashboard","Visão empresarial"],["b2c","B2C"],["saas","SaaS"],["b2b","LADO A · B2B"],["capital","Capital de giro"],["mercado","Mercado & IA"]].map(([key,text]) => <button key={key} className={tab === key ? "active" : ""} onClick={() => setTab(key)}>{text}</button>)}</nav>
     <main>{content}</main>
     <footer>Índice 0–100 baseado nas premissas informadas. Não representa probabilidade estatística. Dados salvos localmente.</footer>
