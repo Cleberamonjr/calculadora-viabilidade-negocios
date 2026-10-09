@@ -92,8 +92,20 @@ function Engine({ title, description, data, update, result, fields }) {
 
 export default function App() {
   const [data, setData] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("viab-data")) || initial; }
-    catch { return initial; }
+    try {
+      const saved = JSON.parse(localStorage.getItem("viab-data"));
+      if (!saved || typeof saved !== "object") return initial;
+      // Merge saved values with the current schema so older browser data cannot
+      // leave a required section or calculation field undefined.
+      return Object.fromEntries(
+        Object.entries(initial).map(([section, defaults]) => [
+          section,
+          { ...defaults, ...(saved[section] && typeof saved[section] === "object" ? saved[section] : {}) }
+        ])
+      );
+    } catch {
+      return initial;
+    }
   });
   const [tab, setTab] = useState("dashboard");
   const [scenario, setScenario] = useState("BASE");
